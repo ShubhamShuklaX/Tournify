@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -12,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-
 export default function Signup() {
   const [formData, setFormData] = useState({
     name: "",
@@ -25,259 +25,210 @@ export default function Signup() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
-  // Public signup roles - only these can register themselves
-  const PUBLIC_SIGNUP_ROLES = [
-    {
-      value: "team_manager",
-      label: "Team Manager / Captain",
-      desc: "Register and manage a team for tournaments",
-    },
-    {
-      value: "player",
-      label: "Player",
-      desc: "Join a team and view tournament schedules",
-    },
-    {
-      value: "volunteer",
-      label: "Volunteer",
-      desc: "Help with tournament operations and scoring",
-    },
-    {
-      value: "spectator",
-      label: "Spectator / Fan",
-      desc: "Follow tournaments and check live scores",
-    },
-  ];
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
     if (!formData.role) {
       toast.error("Please select your role");
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords don't match!");
       return;
     }
-
     if (formData.password.length < 6) {
       toast.error("Password must be at least 6 characters!");
       return;
     }
-
     setLoading(true);
-
     const { error } = await signUp(
       formData.email,
       formData.password,
       formData.name,
       formData.role
     );
-
     if (error) {
       toast.error(error.message);
     } else {
       toast.success("Account created! Please check your email to verify.");
       navigate("/login");
     }
-
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
-          <div className="flex justify-center">
-            <img
-              src="/logo.png"
-              alt="Y-Ultimate Logo"
-              className="w-20 h-20 rounded-full object-cover"
-            />
-          </div>
-
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Join Y-Ultimate
-            </h1>
-            <p className="text-gray-600">
-              Create your account to get started with tournaments
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSignup} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-700 font-medium">
-                Full Name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Your full name"
-                value={formData.name}
-                onChange={handleChange}
-                className="h-12"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-700 font-medium">
-                Email
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                className="h-12"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role" className="text-gray-700 font-medium">
-                I am a
-              </Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, role: value })
-                }
-              >
-                <SelectTrigger className="h-12">
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PUBLIC_SIGNUP_ROLES.map((role) => (
-                    <SelectItem key={role.value} value={role.value}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{role.label}</span>
-                        <span className="text-xs text-gray-500">
-                          {role.desc}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500 mt-1">
-                Staff roles (Coach, Director, Coordinator) are assigned by
-                administrators
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-700 font-medium">
-                Password
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="h-12"
-                required
-              />
-              <p className="text-xs text-gray-500">Minimum 6 characters</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="confirmPassword"
-                className="text-gray-700 font-medium"
-              >
-                Confirm Password
-              </Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="h-12"
-                required
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-medium"
-              disabled={loading}
-            >
-              {loading ? "Creating Account..." : "Sign Up"}
-            </Button>
-          </form>
-
-          {/* Footer */}
-          <div className="space-y-3 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-indigo-600 hover:underline font-medium"
-              >
-                Login
-              </Link>
-            </p>
-            <p className="text-xs text-gray-500">
-              Built for Y-Ultimate • Open Source
-            </p>
-          </div>
-        </div>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-100 font-[Poppins,sans-serif]">
+      {/* Blurred Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/Illustration.png"
+          alt="Ultimate Frisbee background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-white/60 backdrop-blur-[6px]" />
       </div>
 
-      {/* Right side - Illustration */}
-      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="relative w-full h-full max-w-2xl">
-            {/* Placeholder for illustration - Replace /signup-illustration.png with your actual image */}
-            <img
-              src="/Illustration.png"
-              alt="Kids playing ultimate frisbee"
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                // Fallback if image doesn't exist
-                e.target.style.display = "none";
-              }}
-            />
-
-            {/* Decorative elements if image doesn't load */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white space-y-4">
-                <div className="text-6xl font-bold opacity-20">Y-Ultimate</div>
-                <div className="text-xl opacity-20">
-                  Empowering Youth Through Sports
-                </div>
-              </div>
-            </div>
-
-            {/* Decorative shapes */}
-            <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400 rounded-lg transform rotate-12 opacity-30"></div>
-            <div className="absolute bottom-20 right-20 w-16 h-16 bg-green-400 rounded-full opacity-30"></div>
-            <div className="absolute top-1/3 right-10 w-12 h-12 bg-red-400 rounded-lg transform -rotate-12 opacity-30"></div>
-            <div className="absolute bottom-1/4 left-20 w-14 h-14 bg-pink-400 rounded-full opacity-30"></div>
-          </div>
+      {/* Centered Signup Card */}
+      <div className="relative z-10 w-full max-w-md bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl px-10 py-8 sm:px-12 sm:py-10 border border-white/40">
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo.png"
+            alt="Y-Ultimate Logo"
+            className="w-20 h-20 object-contain drop-shadow-md"
+          />
         </div>
+
+        {/* Heading */}
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 text-center mb-2 tracking-tight">
+          Join Y-Ultimate
+        </h1>
+        <p className="text-gray-600 text-sm sm:text-base text-center mb-8">
+          Be part of India’s growing Ultimate Frisbee community!
+        </p>
+
+        {/* Form */}
+        <form onSubmit={handleSignup} className="space-y-5">
+          {/* Full Name */}
+          <div>
+            <Label
+              htmlFor="fullName"
+              className="text-gray-700 text-sm font-semibold block mb-1"
+            >
+              Full Name
+            </Label>
+            <Input
+              id="fullName"
+              name="fullName"
+              placeholder="Enter your full name"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <Label
+              htmlFor="email"
+              className="text-gray-700 text-sm font-semibold block mb-1"
+            >
+              Email
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
+              required
+            />
+          </div>
+
+          {/* Role Select */}
+          <div>
+            <Label
+              htmlFor="role"
+              className="text-gray-700 text-sm font-medium block mb-1"
+            >
+              Role
+            </Label>
+            <Select
+              onValueChange={(value) =>
+                setFormData({ ...formData, role: value })
+              }
+            >
+              <SelectTrigger className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <SelectValue placeholder="Select your role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="player">Player</SelectItem>
+                <SelectItem value="coach">Coach</SelectItem>
+                <SelectItem value="team">Team Manager</SelectItem>
+                <SelectItem value="organizer">Tournament Organizer</SelectItem>
+              </SelectContent>
+            </Select>
+            {formData.role && (
+              <p className="text-xs text-gray-500 mt-1">
+                {formData.role === "player" &&
+                  "Join as a player to participate in tournaments and track your stats."}
+                {formData.role === "coach" &&
+                  "Manage and mentor your team through events and leagues."}
+                {formData.role === "team" &&
+                  "Create, manage, and register your Ultimate team easily."}
+                {formData.role === "organizer" &&
+                  "Host and manage tournaments using Y-Ultimate tools."}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <Label
+              htmlFor="password"
+              className="text-gray-700 text-sm font-semibold block mb-1"
+            >
+              Password
+            </Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Enter password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
+              required
+            />
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <Label
+              htmlFor="confirmPassword"
+              className="text-gray-700 text-sm font-semibold block mb-1"
+            >
+              Confirm Password
+            </Label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              placeholder="Re-enter password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
+              required
+            />
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 mt-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white text-lg font-semibold rounded-xl shadow-lg transform hover:scale-[1.02] transition-all duration-300"
+          >
+            {loading ? "Creating Account..." : "Sign Up"}
+          </Button>
+        </form>
+
+        {/* Login Link */}
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-orange-600 hover:underline font-semibold"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
