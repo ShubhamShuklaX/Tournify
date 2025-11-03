@@ -59,13 +59,17 @@ export const AuthProvider = ({ children }) => {
     });
 
     if (!error && data.user) {
-      // Create profile
-      await supabase.from("profiles").insert({
+      // Create profile with name
+      const { error: profileError } = await supabase.from("profiles").insert({
         id: data.user.id,
         email,
         name,
         role,
       });
+
+      if (profileError) {
+        console.error("Profile creation error:", profileError);
+      }
     }
 
     return { data, error };

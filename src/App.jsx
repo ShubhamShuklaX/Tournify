@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import Dashboard from "./pages/Dashboard";
-import TournamentList from "./pages/tournament/TournamentList";
+import TournamentList from "./pages/tournaments/TournamentList";
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -36,7 +36,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route
             path="/tournaments"
             element={
@@ -45,6 +44,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
         <Toaster />
       </AuthProvider>

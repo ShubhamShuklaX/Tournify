@@ -38,6 +38,11 @@ export default function Signup() {
       desc: "Join a team and view tournament schedules",
     },
     {
+      value: "volunteer",
+      label: "Volunteer",
+      desc: "Help with tournament operations and scoring",
+    },
+    {
       value: "spectator",
       label: "Spectator / Fan",
       desc: "Follow tournaments and check live scores",
