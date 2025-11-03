@@ -19,37 +19,56 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log(
+        "📱 Session check:",
+        session ? "Authenticated" : "Not authenticated"
+      );
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
+      } else {
+        setLoading(false); // ← Important: Stop loading if no session
       }
-      setLoading(false);
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔄 Auth state changed:", event);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        await fetchProfile(session.user.id);
       } else {
         setProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const fetchProfile = async (userId) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
 
-    setProfile(data);
+      if (error) {
+        console.error("❌ Error fetching profile:", error);
+        setProfile(null);
+      } else {
+        console.log("✅ Profile fetched:", data);
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error("❌ Exception fetching profile:", err);
+      setProfile(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signUp = async (email, password, name, role) => {
@@ -61,16 +80,16 @@ export const AuthProvider = ({ children }) => {
     });
 
     console.log("✅ Auth signup result:", data);
-    console.log("❌ Auth error:", error);
 
     if (!error && data.user) {
       console.log("📝 About to create profile with:", {
         id: data.user.id,
         email,
-        name, // ← Check if this is actually the name or empty!
+        name,
         role,
       });
 
+      // Try to insert the profile
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .insert({
@@ -78,7 +97,9 @@ export const AuthProvider = ({ children }) => {
           email,
           name,
           role,
-        });
+        })
+        .select()
+        .single();
 
       console.log("📊 Profile insert result:", { profileData, profileError });
 
