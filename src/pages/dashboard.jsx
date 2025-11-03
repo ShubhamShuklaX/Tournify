@@ -14,53 +14,538 @@ import {
   Trophy,
   GraduationCap,
   LogOut,
+  Home,
+  FileText,
+  CheckCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getRoleLabel, getModuleForRole } from "@/lib/roles";
 
 export default function Dashboard() {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState([]);
+  const [quickActions, setQuickActions] = useState([]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/login");
   };
 
-  // Sample stats - will be replaced with real data later
-  const stats = [
-    {
-      title: "Active Tournaments",
-      value: "0",
-      description: "Ongoing and upcoming",
-      icon: Trophy,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
-    },
-    {
-      title: "Coaching Programs",
-      value: "0",
-      description: "Currently running",
-      icon: GraduationCap,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
-    },
-    {
-      title: "Total Participants",
-      value: "0",
-      description: "Kids enrolled",
-      icon: Users,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
-    },
-    {
-      title: "Upcoming Events",
-      value: "0",
-      description: "Next 30 days",
-      icon: CalendarDays,
-      color: "text-orange-600",
-      bgColor: "bg-orange-100",
-    },
-  ];
+  useEffect(() => {
+    if (profile?.role) {
+      loadRoleBasedContent();
+    }
+  }, [profile]);
+
+  const loadRoleBasedContent = () => {
+    const role = profile.role;
+    let statsData = [];
+    let actionsData = [];
+
+    // === COACHING MODULE ROLES ===
+
+    if (role === "programme_director") {
+      statsData = [
+        {
+          title: "Total Programmes",
+          value: "0",
+          description: "Active programmes",
+          icon: GraduationCap,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Programme Managers",
+          value: "0",
+          description: "Managing programmes",
+          icon: Users,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Total Children",
+          value: "0",
+          description: "Across all programmes",
+          icon: Users,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+        {
+          title: "Active Schools",
+          value: "0",
+          description: "Participating schools",
+          icon: Home,
+          color: "text-orange-600",
+          bgColor: "bg-orange-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Assign Programme Manager",
+          icon: Users,
+          link: "/coaching/assign-manager",
+        },
+        {
+          label: "View All Programmes",
+          icon: GraduationCap,
+          link: "/coaching/programmes",
+        },
+        {
+          label: "Generate Reports",
+          icon: FileText,
+          link: "/coaching/reports",
+        },
+      ];
+    }
+
+    if (role === "programme_manager") {
+      statsData = [
+        {
+          title: "My Programmes",
+          value: "0",
+          description: "Assigned to me",
+          icon: GraduationCap,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Total Children",
+          value: "0",
+          description: "In my programmes",
+          icon: Users,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+        {
+          title: "Active Sessions",
+          value: "0",
+          description: "This week",
+          icon: CalendarDays,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Coaches",
+          value: "0",
+          description: "Under my management",
+          icon: Users,
+          color: "text-orange-600",
+          bgColor: "bg-orange-100",
+        },
+      ];
+      actionsData = [
+        { label: "Manage Children", icon: Users, link: "/coaching/children" },
+        {
+          label: "View Sessions",
+          icon: CalendarDays,
+          link: "/coaching/sessions",
+        },
+        { label: "Coach Workload", icon: Users, link: "/coaching/coaches" },
+      ];
+    }
+
+    if (role === "coach") {
+      statsData = [
+        {
+          title: "My Children",
+          value: "0",
+          description: "Assigned to me",
+          icon: Users,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+        {
+          title: "Today's Sessions",
+          value: "0",
+          description: "Scheduled",
+          icon: CalendarDays,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Attendance Rate",
+          value: "0%",
+          description: "This month",
+          icon: CheckCircle,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Pending Visits",
+          value: "0",
+          description: "Home visits due",
+          icon: Home,
+          color: "text-orange-600",
+          bgColor: "bg-orange-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Mark Attendance",
+          icon: CheckCircle,
+          link: "/coaching/attendance",
+        },
+        { label: "My Children", icon: Users, link: "/coaching/my-children" },
+        {
+          label: "Record Home Visit",
+          icon: Home,
+          link: "/coaching/home-visits/create",
+        },
+      ];
+    }
+
+    if (role === "data_team") {
+      statsData = [
+        {
+          title: "Pending Validations",
+          value: "0",
+          description: "Awaiting review",
+          icon: CheckCircle,
+          color: "text-orange-600",
+          bgColor: "bg-orange-100",
+        },
+        {
+          title: "Reports Generated",
+          value: "0",
+          description: "This month",
+          icon: FileText,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Data Quality",
+          value: "0%",
+          description: "Completion rate",
+          icon: CheckCircle,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Validate Data",
+          icon: CheckCircle,
+          link: "/coaching/data-validation",
+        },
+        {
+          label: "Generate Reports",
+          icon: FileText,
+          link: "/coaching/reports",
+        },
+        {
+          label: "Analyze Trends",
+          icon: FileText,
+          link: "/coaching/analytics",
+        },
+      ];
+    }
+
+    if (role === "site_coordinator") {
+      statsData = [
+        {
+          title: "My Site Children",
+          value: "0",
+          description: "At my location",
+          icon: Users,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+        {
+          title: "Site Attendance",
+          value: "0%",
+          description: "This week",
+          icon: CalendarDays,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Active Coaches",
+          value: "0",
+          description: "At my site",
+          icon: Users,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Site Attendance",
+          icon: CalendarDays,
+          link: "/coaching/site-attendance",
+        },
+        { label: "Support Coaches", icon: Users, link: "/coaching/coaches" },
+        {
+          label: "Site Progress",
+          icon: CheckCircle,
+          link: "/coaching/site-progress",
+        },
+      ];
+    }
+
+    // === TOURNAMENT MODULE ROLES ===
+
+    if (role === "tournament_director") {
+      statsData = [
+        {
+          title: "Active Tournaments",
+          value: "0",
+          description: "Currently running",
+          icon: Trophy,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Registered Teams",
+          value: "0",
+          description: "This season",
+          icon: Users,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Pending Approvals",
+          value: "0",
+          description: "Awaiting review",
+          icon: CalendarDays,
+          color: "text-orange-600",
+          bgColor: "bg-orange-100",
+        },
+        {
+          title: "Upcoming Matches",
+          value: "0",
+          description: "Next 7 days",
+          icon: Trophy,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Create Tournament",
+          icon: Trophy,
+          link: "/tournaments/create",
+        },
+        { label: "View Tournaments", icon: Trophy, link: "/tournaments" },
+        { label: "Approve Teams", icon: Users, link: "/tournaments/approvals" },
+      ];
+    }
+
+    if (role === "team_manager") {
+      statsData = [
+        {
+          title: "My Teams",
+          value: "0",
+          description: "Registered",
+          icon: Users,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Upcoming Matches",
+          value: "0",
+          description: "Next 7 days",
+          icon: CalendarDays,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+        {
+          title: "Spirit Score Avg",
+          value: "0",
+          description: "Current tournament",
+          icon: Trophy,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Register Team",
+          icon: Users,
+          link: "/tournaments/register-team",
+        },
+        { label: "My Teams", icon: Users, link: "/teams/my" },
+        {
+          label: "Submit Spirit Score",
+          icon: Trophy,
+          link: "/tournaments/spirit-score",
+        },
+      ];
+    }
+
+    if (role === "player") {
+      statsData = [
+        {
+          title: "My Matches",
+          value: "0",
+          description: "This tournament",
+          icon: Trophy,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Team Ranking",
+          value: "-",
+          description: "Current standing",
+          icon: Trophy,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+      ];
+      actionsData = [
+        { label: "My Schedule", icon: CalendarDays, link: "/player/schedule" },
+        {
+          label: "Leaderboard",
+          icon: Trophy,
+          link: "/tournaments/leaderboard",
+        },
+      ];
+    }
+
+    if (role === "volunteer") {
+      statsData = [
+        {
+          title: "My Field",
+          value: "-",
+          description: "Assigned field",
+          icon: Trophy,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Today's Matches",
+          value: "0",
+          description: "On my field",
+          icon: CalendarDays,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+      ];
+      actionsData = [
+        { label: "Enter Scores", icon: Trophy, link: "/scoring/live" },
+        {
+          label: "My Schedule",
+          icon: CalendarDays,
+          link: "/volunteer/schedule",
+        },
+      ];
+    }
+
+    if (role === "scoring_team") {
+      statsData = [
+        {
+          title: "Pending Validations",
+          value: "0",
+          description: "Scores to verify",
+          icon: CheckCircle,
+          color: "text-orange-600",
+          bgColor: "bg-orange-100",
+        },
+        {
+          title: "Validated Today",
+          value: "0",
+          description: "Scores approved",
+          icon: CheckCircle,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+      ];
+      actionsData = [
+        {
+          label: "Validate Scores",
+          icon: CheckCircle,
+          link: "/scoring/validate",
+        },
+        {
+          label: "View All Matches",
+          icon: CalendarDays,
+          link: "/tournaments/matches",
+        },
+      ];
+    }
+
+    if (role === "sponsor") {
+      statsData = [
+        {
+          title: "Tournament Reach",
+          value: "0",
+          description: "Total participants",
+          icon: Users,
+          color: "text-blue-600",
+          bgColor: "bg-blue-100",
+        },
+        {
+          title: "Brand Visibility",
+          value: "0",
+          description: "Page views",
+          icon: Trophy,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+      ];
+      actionsData = [
+        { label: "View Dashboard", icon: Trophy, link: "/sponsor/dashboard" },
+        { label: "Analytics", icon: FileText, link: "/sponsor/analytics" },
+      ];
+    }
+
+    if (role === "spectator") {
+      statsData = [
+        {
+          title: "Live Tournaments",
+          value: "0",
+          description: "Currently ongoing",
+          icon: Trophy,
+          color: "text-purple-600",
+          bgColor: "bg-purple-100",
+        },
+        {
+          title: "Matches Today",
+          value: "0",
+          description: "Across all fields",
+          icon: CalendarDays,
+          color: "text-green-600",
+          bgColor: "bg-green-100",
+        },
+      ];
+      actionsData = [
+        { label: "Live Scores", icon: Trophy, link: "/public/live-scores" },
+        {
+          label: "View Tournaments",
+          icon: Trophy,
+          link: "/public/tournaments",
+        },
+      ];
+    }
+
+    setStats(statsData);
+    setQuickActions(actionsData);
+  };
+
+  // Show loading state
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  const welcomeMessages = {
+    programme_director: "You have full access to all coaching programmes.",
+    programme_manager: "Manage your assigned programmes and track progress.",
+    coach: "Track your sessions and children's progress.",
+    data_team: "Validate data and generate insightful reports.",
+    site_coordinator: "Monitor your site and support coaches.",
+    tournament_director: "Full control over all tournament operations.",
+    team_manager: "Manage your team and register for tournaments.",
+    player: "View your schedule and team performance.",
+    volunteer: "Enter match scores for your assigned field.",
+    scoring_team: "Validate and ensure accurate tournament data.",
+    sponsor: "Track your brand visibility and engagement.",
+    spectator: "Follow live tournaments and match results.",
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,8 +568,8 @@ export default function Dashboard() {
                 <p className="text-sm font-medium text-gray-900">
                   {profile?.name || user?.email}
                 </p>
-                <p className="text-xs text-gray-500 capitalize">
-                  {profile?.role || "User"}
+                <p className="text-xs text-gray-500">
+                  {getRoleLabel(profile?.role)}
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
@@ -101,10 +586,10 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome back, {profile?.name?.split(" ")[0] || "Coach"}! 👋
+            Welcome back, {profile?.name?.split(" ")[0] || "User"}! 👋
           </h2>
           <p className="text-gray-600">
-            Here's what's happening with your programs and tournaments today.
+            {welcomeMessages[profile.role] || "Welcome to Y-Ultimate Platform"}
           </p>
         </div>
 
@@ -138,79 +623,76 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks to get you started</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link to="/tournaments/create">
-                <Button
-                  variant="outline"
-                  className="w-full h-auto py-6 flex flex-col items-center justify-center space-y-2"
-                >
-                  <Trophy className="w-8 h-8 text-purple-600" />
-                  <span className="font-medium">Create Tournament</span>
-                </Button>
-              </Link>
+        {quickActions.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Common tasks for your role</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {quickActions.map((action, index) => {
+                  const Icon = action.icon;
+                  return (
+                    <Link key={index} to={action.link}>
+                      <Button
+                        variant="outline"
+                        className="w-full h-auto py-6 flex flex-col items-center justify-center space-y-2"
+                      >
+                        <Icon className="w-8 h-8 text-purple-600" />
+                        <span className="font-medium">{action.label}</span>
+                      </Button>
+                    </Link>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-              <Link to="/coaching/create">
-                <Button
-                  variant="outline"
-                  className="w-full h-auto py-6 flex flex-col items-center justify-center space-y-2"
-                >
-                  <GraduationCap className="w-8 h-8 text-purple-600" />
-                  <span className="font-medium">Add Coaching Program</span>
-                </Button>
-              </Link>
-
-              <Link to="/participants/register">
-                <Button
-                  variant="outline"
-                  className="w-full h-auto py-6 flex flex-col items-center justify-center space-y-2"
-                >
-                  <Users className="w-8 h-8 text-purple-600" />
-                  <span className="font-medium">Register Participant</span>
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
+        {/* Recent Activity Widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Tournaments</CardTitle>
-              <CardDescription>
-                Your latest tournament activities
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-gray-500">
-                <Trophy className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                <p>No tournaments yet</p>
-                <p className="text-sm mt-2">
-                  Create your first tournament to get started
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Show for coaching roles */}
+          {["programme_director", "programme_manager", "coach"].includes(
+            profile.role
+          ) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Sessions</CardTitle>
+                <CardDescription>Latest coaching activities</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12 text-gray-500">
+                  <GraduationCap className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>No sessions yet</p>
+                  <p className="text-sm mt-2">
+                    Start tracking your coaching sessions
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Programs</CardTitle>
-              <CardDescription>Your latest coaching activities</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-gray-500">
-                <GraduationCap className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                <p>No programs yet</p>
-                <p className="text-sm mt-2">Add your first coaching program</p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Show for tournament roles */}
+          {["tournament_director", "team_manager", "volunteer"].includes(
+            profile.role
+          ) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Tournaments</CardTitle>
+                <CardDescription>Latest tournament activities</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12 text-gray-500">
+                  <Trophy className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>No tournaments yet</p>
+                  <p className="text-sm mt-2">
+                    Create or join a tournament to get started
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>

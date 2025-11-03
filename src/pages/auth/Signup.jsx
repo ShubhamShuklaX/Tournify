@@ -19,11 +19,30 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "coach",
+    role: "",
   });
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
+
+  // Public signup roles - only these can register themselves
+  const PUBLIC_SIGNUP_ROLES = [
+    {
+      value: "team_manager",
+      label: "Team Manager / Captain",
+      desc: "Register and manage a team for tournaments",
+    },
+    {
+      value: "player",
+      label: "Player",
+      desc: "Join a team and view tournament schedules",
+    },
+    {
+      value: "spectator",
+      label: "Spectator / Fan",
+      desc: "Follow tournaments and check live scores",
+    },
+  ];
 
   const handleChange = (e) => {
     setFormData({
@@ -34,6 +53,11 @@ export default function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    if (!formData.role) {
+      toast.error("Please select your role");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords don't match!");
@@ -80,9 +104,11 @@ export default function Signup() {
 
           {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Join Y-Ultimate
+            </h1>
             <p className="text-gray-600">
-              Step in to lead, manage, and make a difference with Y-Ultimate.
+              Create your account to get started with tournaments
             </p>
           </div>
 
@@ -112,7 +138,7 @@ export default function Signup() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Your email"
+                placeholder="your.email@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 className="h-12"
@@ -122,7 +148,7 @@ export default function Signup() {
 
             <div className="space-y-2">
               <Label htmlFor="role" className="text-gray-700 font-medium">
-                Role
+                I am a
               </Label>
               <Select
                 value={formData.role}
@@ -131,15 +157,25 @@ export default function Signup() {
                 }
               >
                 <SelectTrigger className="h-12">
-                  <SelectValue placeholder="Coach" />
+                  <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="coach">Coach</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="volunteer">Volunteer</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
+                  {PUBLIC_SIGNUP_ROLES.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{role.label}</span>
+                        <span className="text-xs text-gray-500">
+                          {role.desc}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-gray-500 mt-1">
+                Staff roles (Coach, Director, Coordinator) are assigned by
+                administrators
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -156,6 +192,7 @@ export default function Signup() {
                 className="h-12"
                 required
               />
+              <p className="text-xs text-gray-500">Minimum 6 characters</p>
             </div>
 
             <div className="space-y-2">
@@ -205,7 +242,7 @@ export default function Signup() {
       </div>
 
       {/* Right side - Illustration */}
-      <div className="hidden lg:block lg:w-1/2  relative overflow-hidden">
+      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="relative w-full h-full max-w-2xl">
             {/* Placeholder for illustration - Replace /signup-illustration.png with your actual image */}
