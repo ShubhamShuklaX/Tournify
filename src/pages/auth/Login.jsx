@@ -4,14 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { toast } from "sonner";
 
 export default function Login() {
@@ -38,67 +30,103 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 p-4">
-      <Card className="w-full max-w-md shadow-2xl rounded-2xl ">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex items-center justify-center">
-            <img
-              src="/logo.png"
-              alt="Y-Ultimate Logo"
-              className="w-[8rem] h-auto object-contain"
-              loading="lazy"
-              draggable="false"
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-100 font-[Poppins,sans-serif]">
+      {/* Blurred Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/Illustration.png"
+          alt="Ultimate Frisbee background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-white/60 backdrop-blur-[6px]" />
+      </div>
+
+      {/* Centered Login Card */}
+      <div className="relative z-10 w-full max-w-md bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl px-10 py-8 sm:px-12 sm:py-10 border border-white/40">
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img
+            src="/logo.png"
+            alt="Y-Ultimate Logo"
+            className="w-20 h-20 object-contain drop-shadow-md"
+          />
+        </div>
+
+        {/* Heading */}
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 text-center mb-2 tracking-tight">
+          Welcome Back
+        </h1>
+        <p className="text-gray-600 text-sm sm:text-base text-center mb-8">
+          Reconnect with your Y-Ultimate community!
+        </p>
+
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="space-y-5">
+          {/* Email */}
+          <div>
+            <Label
+              htmlFor="email"
+              className="text-gray-700 text-sm font-semibold block mb-1"
+            >
+              Email
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
+              required
             />
           </div>
 
-          <CardTitle className="text-2xl font-semibold">Welcome Back</CardTitle>
-          <CardDescription>
-            Reconnect with your Y-Ultimate community.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-          </form>
-        </CardContent>
-
-        <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-muted-foreground">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-purple-600 hover:underline">
-              Sign up
-            </Link>
+          {/* Password */}
+          <div>
+            <Label
+              htmlFor="password"
+              className="text-gray-700 text-sm font-semibold block mb-1"
+            >
+              Password
+            </Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
+              required
+            />
           </div>
-          <div className="text-xs text-center text-muted-foreground">
-            Built for Y-Ultimate • Open Source
-          </div>
-        </CardFooter>
-      </Card>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 mt-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white text-lg font-semibold rounded-xl shadow-lg transform hover:scale-[1.02] transition-all duration-300"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </Button>
+        </form>
+
+        {/* Footer Links */}
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-orange-600 hover:underline font-semibold"
+          >
+            Sign up
+          </Link>
+        </p>
+
+        <p className="mt-2 text-center text-xs text-gray-500">
+          Built for Y-Ultimate • Open Source
+        </p>
+      </div>
     </div>
   );
 }
