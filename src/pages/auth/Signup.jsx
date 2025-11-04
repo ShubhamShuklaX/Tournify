@@ -19,11 +19,30 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
+    category: "",
     role: "",
   });
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
+
+  const tournamentRoles = [
+    "Tournament Director",
+    "Team Manager / Captain",
+    "Player",
+    "Volunteer / Field Official",
+    "Scoring / Tech Team",
+    "Sponsor / Partner",
+    "Spectator / Fan",
+  ];
+
+  const coachingRoles = [
+    "Programme Director / Admin",
+    "Programme Manager",
+    "Coach / Session Facilitator",
+    "Reporting / Data Team",
+    "Community / School Coordinator",
+  ];
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,7 +50,10 @@ export default function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
+    if (!formData.category) {
+      toast.error("Please select your category (Tournament/Coaching)");
+      return;
+    }
     if (!formData.role) {
       toast.error("Please select your role");
       return;
@@ -66,66 +88,59 @@ export default function Signup() {
     setLoading(false);
   };
 
+  const availableRoles =
+    formData.category === "tournament"
+      ? tournamentRoles
+      : formData.category === "coaching"
+      ? coachingRoles
+      : [];
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-100 font-[Poppins,sans-serif]">
-      {/* Blurred Background Image */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
         <img
           src="/Illustration.png"
-          alt="Ultimate Frisbee background"
+          alt="Background"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-white/60 backdrop-blur-[6px]" />
       </div>
 
-      {/* Centered Signup Card */}
+      {/* Signup Card */}
       <div className="relative z-10 w-full max-w-md bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl px-10 py-8 sm:px-12 sm:py-10 border border-white/40">
-        {/* Logo */}
         <div className="flex justify-center mb-4">
           <img
             src="/logo.png"
-            alt="Y-Ultimate Logo"
+            alt="Logo"
             className="w-20 h-20 object-contain drop-shadow-md"
           />
         </div>
 
-        {/* Heading */}
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 text-center mb-2 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 text-center mb-2">
           Join Y-Ultimate
         </h1>
-        <p className="text-gray-600 text-sm sm:text-base text-center mb-8">
-          Be part of India's growing Ultimate Frisbee community!
+        <p className="text-gray-600 text-sm text-center mb-8">
+          Choose your category and role to get started.
         </p>
 
-        {/* Form */}
         <form onSubmit={handleSignup} className="space-y-5">
-          {/* Full Name - FIXED: Changed id and name to "name" */}
+          {/* Name */}
           <div>
-            <Label
-              htmlFor="name"
-              className="text-gray-700 text-sm font-semibold block mb-1"
-            >
-              Full Name
-            </Label>
+            <Label htmlFor="name">Full Name</Label>
             <Input
               id="name"
               name="name"
               placeholder="Enter your full name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
               required
             />
           </div>
 
           {/* Email */}
           <div>
-            <Label
-              htmlFor="email"
-              className="text-gray-700 text-sm font-semibold block mb-1"
-            >
-              Email
-            </Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               name="email"
@@ -133,53 +148,54 @@ export default function Signup() {
               placeholder="Enter your email address"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
               required
             />
           </div>
 
-          {/* Role Select - FIXED: Correct role values and removed restricted roles */}
+          {/* Category */}
           <div>
-            <Label
-              htmlFor="role"
-              className="text-gray-700 text-sm font-medium block mb-1"
-            >
-              Role
-            </Label>
+            <Label htmlFor="category">Category</Label>
             <Select
               onValueChange={(value) =>
-                setFormData({ ...formData, role: value })
+                setFormData({ ...formData, category: value, role: "" })
               }
             >
-              <SelectTrigger className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-                <SelectValue placeholder="Select your role" />
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="player">Player</SelectItem>
-                <SelectItem value="team_manager">Team Manager</SelectItem>
-                <SelectItem value="spectator">Spectator</SelectItem>
+                <SelectItem value="tournament">Tournament</SelectItem>
+                <SelectItem value="coaching">Coaching</SelectItem>
               </SelectContent>
             </Select>
-            {formData.role && (
-              <p className="text-xs text-gray-500 mt-1">
-                {formData.role === "player" &&
-                  "Join as a player to participate in tournaments and track your stats."}
-                {formData.role === "team_manager" &&
-                  "Create, manage, and register your Ultimate team easily."}
-                {formData.role === "spectator" &&
-                  "Follow tournaments and view live scores."}
-              </p>
-            )}
           </div>
+
+          {/* Role */}
+          {formData.category && (
+            <div>
+              <Label htmlFor="role">Role</Label>
+              <Select
+                onValueChange={(value) =>
+                  setFormData({ ...formData, role: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableRoles.map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Password */}
           <div>
-            <Label
-              htmlFor="password"
-              className="text-gray-700 text-sm font-semibold block mb-1"
-            >
-              Password
-            </Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               name="password"
@@ -187,19 +203,13 @@ export default function Signup() {
               placeholder="Enter password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
               required
             />
           </div>
 
           {/* Confirm Password */}
           <div>
-            <Label
-              htmlFor="confirmPassword"
-              className="text-gray-700 text-sm font-semibold block mb-1"
-            >
-              Confirm Password
-            </Label>
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
               id="confirmPassword"
               name="confirmPassword"
@@ -207,22 +217,20 @@ export default function Signup() {
               placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
               required
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <Button
             type="submit"
             disabled={loading}
-            className="w-full py-3 mt-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white text-lg font-semibold rounded-xl shadow-lg transform hover:scale-[1.02] transition-all duration-300"
+            className="w-full py-3 mt-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white text-lg font-semibold rounded-xl shadow-lg"
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </Button>
         </form>
 
-        {/* Login Link */}
         <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account?{" "}
           <Link
