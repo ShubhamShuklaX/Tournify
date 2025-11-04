@@ -16,6 +16,9 @@ import CoachDashboard from "./pages/coaching/CoachDashboard";
 import Sessions from "./pages/coaching/Sessions";
 import Assessments from "./pages/coaching/Assessments";
 import Attendance from "./pages/coaching/Attendance";
+import StudentDetail from "./pages/coaching/StudentDetail";
+import StudentsPage from "./pages/coaching/students";
+import AddStudent from "./pages/coaching/AddStudents";
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -116,6 +119,29 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
+
+        <Route 
+          path="/coaching/students" 
+          element={
+          <ProtectedRoute>
+            <StudentsPage />
+          </ProtectedRoute>} />
+        
+        <Route 
+          path="/coaching/student/:id" 
+          element={
+          <ProtectedRoute>
+            <StudentDetail />
+          </ProtectedRoute>} />
+
+          <Route 
+          path="/coaching/student/add" 
+          element={
+          <ProtectedRoute>
+            <StudentDetail />
+          </ProtectedRoute>} />
+      
 
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/dashboard" />} />

@@ -1,9 +1,7 @@
-// src/lib/coachApi.js
-// If you have a Supabase client at "@/lib/supabase", you can import it.
-// For pure UI dev, this file works fine without Supabase — it returns mock data.
 
-// import { supabase } from "@/lib/supabase";
+import { supabase } from './supabase';
 
+// Fetch dashboard metrics
 const MOCK = {
   activePrograms: 2,
   enrolledChildren: 124,
@@ -23,24 +21,19 @@ const MOCK = {
   ]
 };
 
+// Fetch coaches
+export async function getCoaches() {
+  const { data, error } = await supabase
+    .from('coaches') // replace with your table
+    .select('*');
+
+  if (error) throw error;
+  return data;
+}
+
+
+
 export async function fetchCoachDashboard() {
   // For UI work, we just return MOCK with a tiny delay to simulate loading.
   return new Promise((resolve) => setTimeout(() => resolve(MOCK), 220));
-
-  // When you want real data, replace with something like:
-  // const [{ data: prog }, { data: children }, { data: pending }, { data: sessions }] = await Promise.all([
-  //   supabase.from("programmes").select("id"),
-  //   supabase.from("children").select("id"),
-  //   supabase.from("lsas_assessments").select("id").is("total", null),
-  //   supabase.from("sessions").select("id")
-  // ]);
-  // return {
-  //   activePrograms: prog?.length ?? 0,
-  //   enrolledChildren: children?.length ?? 0,
-  //   pendingAssessments: pending?.length ?? 0,
-  //   upcomingSessions: sessions?.length ?? 0,
-  //   recentPrograms: MOCK.recentPrograms,
-  //   coachWorkload: MOCK.coachWorkload,
-  //   attendanceSnapshot: MOCK.attendanceSnapshot
-  // };
 }
