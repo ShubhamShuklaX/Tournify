@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -13,9 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+
 export default function Signup() {
   const [formData, setFormData] = useState({
-    name: "",
+    name: "", // Changed from fullName to name
     email: "",
     password: "",
     confirmPassword: "",
@@ -25,38 +25,44 @@ export default function Signup() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
     if (!formData.role) {
       toast.error("Please select your role");
       return;
     }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords don't match!");
       return;
     }
+
     if (formData.password.length < 6) {
       toast.error("Password must be at least 6 characters!");
       return;
     }
+
     setLoading(true);
+
     const { error } = await signUp(
       formData.email,
       formData.password,
       formData.name,
       formData.role
     );
+
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Account created! Please check your email to verify.");
+      toast.success("Account created successfully!");
       navigate("/login");
     }
+
     setLoading(false);
   };
 
@@ -88,24 +94,24 @@ export default function Signup() {
           Join Y-Ultimate
         </h1>
         <p className="text-gray-600 text-sm sm:text-base text-center mb-8">
-          Be part of India’s growing Ultimate Frisbee community!
+          Be part of India's growing Ultimate Frisbee community!
         </p>
 
         {/* Form */}
         <form onSubmit={handleSignup} className="space-y-5">
-          {/* Full Name */}
+          {/* Full Name - FIXED: Changed id and name to "name" */}
           <div>
             <Label
-              htmlFor="fullName"
+              htmlFor="name"
               className="text-gray-700 text-sm font-semibold block mb-1"
             >
               Full Name
             </Label>
             <Input
-              id="fullName"
-              name="fullName"
+              id="name"
+              name="name"
               placeholder="Enter your full name"
-              value={formData.fullName}
+              value={formData.name}
               onChange={handleChange}
               className="w-full p-3 rounded-xl border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-300 transition-all placeholder:text-gray-400"
               required
@@ -132,7 +138,7 @@ export default function Signup() {
             />
           </div>
 
-          {/* Role Select */}
+          {/* Role Select - FIXED: Correct role values and removed restricted roles */}
           <div>
             <Label
               htmlFor="role"
@@ -150,21 +156,18 @@ export default function Signup() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="player">Player</SelectItem>
-                <SelectItem value="coach">Coach</SelectItem>
-                <SelectItem value="team">Team Manager</SelectItem>
-                <SelectItem value="organizer">Tournament Organizer</SelectItem>
+                <SelectItem value="team_manager">Team Manager</SelectItem>
+                <SelectItem value="spectator">Spectator</SelectItem>
               </SelectContent>
             </Select>
             {formData.role && (
               <p className="text-xs text-gray-500 mt-1">
                 {formData.role === "player" &&
                   "Join as a player to participate in tournaments and track your stats."}
-                {formData.role === "coach" &&
-                  "Manage and mentor your team through events and leagues."}
-                {formData.role === "team" &&
+                {formData.role === "team_manager" &&
                   "Create, manage, and register your Ultimate team easily."}
-                {formData.role === "organizer" &&
-                  "Host and manage tournaments using Y-Ultimate tools."}
+                {formData.role === "spectator" &&
+                  "Follow tournaments and view live scores."}
               </p>
             )}
           </div>

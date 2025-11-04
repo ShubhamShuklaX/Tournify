@@ -56,8 +56,51 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+  // FIXED: signUp now accepts name and role
+  const signUp = async (email, password, name, role) => {
+    console.log("🔍 SignUp called with:", { email, name, role });
+
+    // Sign up with metadata
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name,
+          role: role,
+        },
+      },
+    });
+
+    console.log("✅ Auth signup result:", data);
+
+    // The trigger will handle profile creation, but we can also manually create it
+    if (!error && data.user) {
+      console.log("📝 Creating profile manually for:", data.user.id);
+
+      // Wait a moment for trigger to complete
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Try to insert/update profile with correct data
+      const { error: profileError } = await supabase.from("profiles").upsert(
+        {
+          id: data.user.id,
+          email: email,
+          name: name,
+          role: role,
+        },
+        {
+          onConflict: "id",
+        }
+      );
+
+      if (profileError) {
+        console.error("❌ Profile creation error:", profileError);
+      } else {
+        console.log("✅ Profile created successfully");
+      }
+    }
+
     return { data, error };
   };
 

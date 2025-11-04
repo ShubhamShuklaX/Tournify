@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, UserCheck } from "lucide-react";
+import PlayerSearch from "@/components/teams/PlayerSearch";
+import DeleteTeamButton from "@/components/layout/DeleteTeamButton";
 
 export default function TeamDetail() {
   const { id } = useParams();
@@ -13,11 +13,6 @@ export default function TeamDetail() {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
-  const [newPlayer, setNewPlayer] = useState({
-    player_name: "",
-    jersey_number: "",
-    position: "",
-  });
 
   useEffect(() => {
     fetchTeamData();
@@ -51,25 +46,9 @@ export default function TeamDetail() {
     }
   };
 
-  const handleAddPlayer = async (e) => {
-    e.preventDefault();
-    try {
-      const { error } = await supabase.from("team_players").insert({
-        team_id: id,
-        player_name: newPlayer.player_name,
-        jersey_number: newPlayer.jersey_number || null,
-        position: newPlayer.position || null,
-      });
-
-      if (error) throw error;
-
-      setNewPlayer({ player_name: "", jersey_number: "", position: "" });
-      setShowAddPlayer(false);
-      fetchTeamData();
-    } catch (error) {
-      console.error("Error adding player:", error);
-      alert("Failed to add player");
-    }
+  const handlePlayerAdded = () => {
+    setShowAddPlayer(false);
+    fetchTeamData();
   };
 
   const handleDeletePlayer = async (playerId) => {
@@ -85,130 +64,129 @@ export default function TeamDetail() {
       fetchTeamData();
     } catch (error) {
       console.error("Error deleting player:", error);
+      alert("Failed to remove player: " + error.message);
     }
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
-  if (!team) return <div className="p-8">Team not found</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!team) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-lg">Team not found</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8">
-      <Button
-        variant="ghost"
-        onClick={() => navigate("/teams")}
-        className="mb-4"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Teams
-      </Button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-6xl mx-auto">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/teams")}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Teams
+        </Button>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{team.name}</h1>
-        <p className="text-gray-600">{team.age_division}</p>
-      </div>
-
-      <div className="bg-white rounded-lg border p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">
-            Roster ({players.length} players)
-          </h2>
-          <Button onClick={() => setShowAddPlayer(!showAddPlayer)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Player
-          </Button>
+        {/* Team Header with Delete Button */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {team.name}
+              </h1>
+              <p className="text-gray-600">
+                Age Division: {team.age_division || "Not specified"}
+              </p>
+            </div>
+            <DeleteTeamButton teamId={team.id} teamName={team.name} />
+          </div>
         </div>
 
-        {showAddPlayer && (
-          <form
-            onSubmit={handleAddPlayer}
-            className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4"
-          >
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="player_name">Player Name *</Label>
-                <Input
-                  id="player_name"
-                  value={newPlayer.player_name}
-                  onChange={(e) =>
-                    setNewPlayer({ ...newPlayer, player_name: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="jersey_number">Jersey #</Label>
-                <Input
-                  id="jersey_number"
-                  type="number"
-                  value={newPlayer.jersey_number}
-                  onChange={(e) =>
-                    setNewPlayer({
-                      ...newPlayer,
-                      jersey_number: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="position">Position</Label>
-                <Input
-                  id="position"
-                  value={newPlayer.position}
-                  onChange={(e) =>
-                    setNewPlayer({ ...newPlayer, position: e.target.value })
-                  }
-                  placeholder="e.g., Handler, Cutter"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit">Add Player</Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowAddPlayer(false)}
-              >
-                Cancel
+        {/* Roster Section */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold">
+              Roster ({players.length}{" "}
+              {players.length === 1 ? "player" : "players"})
+            </h2>
+            {!showAddPlayer && (
+              <Button onClick={() => setShowAddPlayer(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Player
               </Button>
-            </div>
-          </form>
-        )}
-
-        {players.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">
-            No players yet. Add your first player!
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {players.map((player) => (
-              <div
-                key={player.id}
-                className="flex justify-between items-center p-4 border rounded hover:bg-gray-50"
-              >
-                <div className="flex items-center gap-4">
-                  {player.jersey_number && (
-                    <span className="font-bold text-lg w-8">
-                      {player.jersey_number}
-                    </span>
-                  )}
-                  <div>
-                    <p className="font-medium">{player.player_name}</p>
-                    {player.position && (
-                      <p className="text-sm text-gray-500">{player.position}</p>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeletePlayer(player.id)}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
-              </div>
-            ))}
+            )}
           </div>
-        )}
+
+          {showAddPlayer && (
+            <div className="mb-6">
+              <PlayerSearch
+                teamId={id}
+                onPlayerAdded={handlePlayerAdded}
+                onCancel={() => setShowAddPlayer(false)}
+              />
+            </div>
+          )}
+
+          {players.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">
+                No players yet. Add your first player!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {players.map((player) => (
+                <div
+                  key={player.id}
+                  className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    {player.jersey_number && (
+                      <span className="font-bold text-xl w-10 text-blue-600">
+                        #{player.jersey_number}
+                      </span>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <p className="font-medium text-lg">
+                          {player.player_name}
+                        </p>
+                        {player.position && (
+                          <p className="text-sm text-gray-500">
+                            {player.position}
+                          </p>
+                        )}
+                      </div>
+                      {player.is_registered_user && (
+                        <UserCheck
+                          className="h-5 w-5 text-green-600"
+                          title="Registered User"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeletePlayer(player.id)}
+                    className="hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

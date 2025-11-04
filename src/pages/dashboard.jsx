@@ -1,6 +1,8 @@
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import Navbar from "@/components/layout/Navbar";
+
 import {
   Card,
   CardContent,
@@ -10,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import {
   CalendarDays,
+  Clock,
   Users,
   Trophy,
   GraduationCap,
@@ -18,7 +21,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getRoleLabel } from "@/lib/roles";
 
 export default function Dashboard() {
   const { profile } = useAuth();
@@ -540,6 +542,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar /> {/* ✅ Added Navbar */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -604,6 +607,46 @@ export default function Dashboard() {
                   );
                 })}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* ✅ Pending User Approvals (for Tournament Director) */}
+        {profile?.role === "tournament_director" && (
+          <Card className="border-yellow-500 mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-yellow-700">
+                <Clock className="h-5 w-5" />
+                Pending User Approvals
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {stats.pendingUserApprovals > 0 ? (
+                <div className="flex flex-col items-start gap-3">
+                  <p className="text-gray-600">
+                    There are{" "}
+                    <span className="font-semibold text-yellow-600">
+                      {stats.pendingUserApprovals}
+                    </span>{" "}
+                    users awaiting approval.
+                  </p>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Link to="/admin/approvals">
+                      <UserCheck className="h-4 w-4" />
+                      Review Pending Approvals
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span>All users are approved. No pending requests.</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
