@@ -1,204 +1,344 @@
-# Y-Ultimate Management Platform - Setup Guide
+# Y-Ultimate Management Platform 🥏
 
-A web platform for managing Ultimate Frisbee tournaments and coaching programs for underprivileged youth.
+A comprehensive web platform for managing Ultimate Frisbee tournaments, teams, coaching programs, and community engagement for underprivileged youth.
 
-## Prerequisites
+---
 
-Before you begin, make sure you have installed:
+## 🌟 Features
 
-- **Node.js** (v18 or higher) - [Download here](https://nodejs.org/)
-- **Git** - [Download here](https://git-scm.com/)
-- A code editor like **VS Code** - [Download here](https://code.visualstudio.com/)
+### Tournament Management
+- **Create & Manage Tournaments**: Full tournament lifecycle management
+- **Match Scheduling**: Automated match generation with field assignments
+- **Live Scoring**: Real-time score updates and match results
+- **Spirit Scores**: Track Spirit of the Game scores per match
+- **Bracket Generation**: Support for Round Robin, Pool Play, and Elimination formats
+- **Media Gallery**: Upload and share tournament photos and videos
+- **Sponsor Management**: Showcase tournament sponsors with tier-based display
 
-## Step 1: Clone the Repository
+### Team Management
+- **Team Registration**: Easy team creation and management
+- **Player Roster**: Add registered players or manual entries
+- **Team Following**: Follow favorite teams for updates
+- **Tournament Registration**: Register teams for upcoming tournaments
 
-```bash
-git clone <your-repository-url>
-cd yultimate-platform
-```
+### Coaching & Community
+- **Program Management**: Track coaching programs and batches
+- **Session Tracking**: Record coaching sessions and attendance
+- **Child Assessments**: Monitor progress with Spirit of the Game metrics
+- **Home Visits**: Document community engagement activities
+- **Progress Reports**: Generate comprehensive reports
 
-## Step 2: Install Dependencies
+### User Roles & Permissions
+- **Players**: View tournaments, join teams, track stats
+- **Team Managers**: Create teams, manage rosters, register for tournaments
+- **Tournament Directors**: Create tournaments, manage schedules, approve registrations
+- **Coaches**: Track sessions, record assessments, manage programs
+- **Volunteers**: Update scores, check attendance
+- **Spectators**: View tournaments and follow teams
 
-```bash
-npm install
-```
+### Additional Features
+- **Announcements**: Tournament-specific announcements and updates
+- **Match Predictions**: Users can predict match outcomes
+- **Visitor Management**: Track tournament visitors and check-ins
+- **Role Approval System**: Request elevated roles with admin approval
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 
-This will install all required packages including:
+---
 
-- React + Vite
-- Supabase
-- Tailwind CSS
-- shadcn/ui components
-- React Router
+## 🚀 Quick Start
 
-## Step 3: Set Up Supabase
+### Prerequisites
 
-### 3.1 Create a Supabase Account
+Ensure you have the following installed:
+- **Node.js** 18.x or higher ([Download](https://nodejs.org/))
+- **npm** or **yarn** package manager
+- **Git** ([Download](https://git-scm.com/))
 
-1. Go to [https://supabase.com](https://supabase.com)
-2. Sign up for a free account
-3. Create a new project
-   - Choose a project name (e.g., "y-ultimate")
-   - Set a database password (save this!)
-   - Select a region close to you
+### Installation
 
-### 3.2 Get Your Supabase Credentials
-
-1. In your Supabase dashboard, click **Settings** (gear icon)
-2. Click **API** in the sidebar
-3. Copy these two values:
-   - **Project URL** (starts with `https://`)
-   - **anon public key** (long string starting with `eyJ...`)
-
-### 3.3 Set Up Database Tables
-
-1. In Supabase dashboard, click **SQL Editor**
-2. Click **New Query**
-3. Copy the SQL schema from `database-schema.sql` (ask the project owner for this file)
-4. Paste it into the SQL editor
-5. Click **Run** (or press Ctrl+Enter)
-6. You should see "Success. No rows returned"
-
-## Step 4: Configure Environment Variables
-
-1. Create a file named `.env.local` in the root folder (same level as `package.json`)
-
-2. Add your Supabase credentials:
-
-```env
-VITE_SUPABASE_URL=your_project_url_here
-VITE_SUPABASE_ANON_KEY=your_anon_key_here
-```
-
-**Example:**
-
-```env
-VITE_SUPABASE_URL=https://abcdefghijklm.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG0iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYyMzE2MzIwMCwiZXhwIjoxOTM4NzM5MjAwfQ.XXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
-
-⚠️ **Important:** Never commit `.env.local` to Git! It's already in `.gitignore`.
-
-## Step 5: Add Logo Image
-
-1. Save the Y-Ultimate logo as `logo.png`
-2. Place it in the `public` folder:
-   ```
-   yultimate-platform/
-   ├── public/
-   │   └── logo.png  ← Put logo here
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/y-ultimate-platform.git
+   cd y-ultimate-platform
    ```
 
-## Step 6: Run the Development Server
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-```
+3. **Set up Supabase**
+   - Create a Supabase account at [supabase.com](https://supabase.com)
+   - Create a new project
+   - Go to **SQL Editor** and run the `database-schema.sql` file from this repo
+   - Get your API credentials from **Settings → API**:
+     - Project URL
+     - anon public key
 
-The app will open at: **http://localhost:5173**
+4. **Configure environment variables**
+   
+   Create a `.env.local` file in the project root:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-## Step 7: Create Your First Account
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+   
+   The app will be available at `http://localhost:5173`
 
-1. Go to `http://localhost:5173/signup`
-2. Fill in the form:
-   - Full Name
-   - Email
-   - Role (Coach/Admin/Manager/Volunteer)
-   - Password (minimum 6 characters)
-3. Click **Sign Up**
-4. Check your email for verification (if enabled)
-5. Login at `http://localhost:5173/login`
+---
 
-## Troubleshooting
-
-### "Invalid supabaseUrl" Error
-
-- Make sure `.env.local` exists in the root folder
-- Check that `VITE_SUPABASE_URL` starts with `https://`
-- Restart the dev server after creating `.env.local`
-
-### Blank White Page
-
-- Open browser console (F12) to check for errors
-- Verify Supabase credentials are correct
-- Make sure you ran the SQL schema in Supabase
-
-### "Cannot find module" Errors
-
-```bash
-# Delete node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### PostCSS/Tailwind Errors
-
-```bash
-# Reinstall Tailwind dependencies
-npm install -D tailwindcss@3.4.1 postcss autoprefixer tailwindcss-animate
-```
-
-### Port Already in Use
-
-If port 5173 is taken:
-
-```bash
-npm run dev -- --port 3000
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-yultimate-platform/
-├── public/              # Static files (logo, images)
+y-ultimate-platform/
+├── public/                     # Static assets
+│   └── logo.png               # Y-Ultimate logo
 ├── src/
-│   ├── components/      # Reusable UI components
-│   │   ├── ui/         # shadcn components
-│   │   ├── auth/       # Auth-related components
-│   │   ├── tournament/ # Tournament components
-│   │   └── coaching/   # Coaching components
-│   ├── context/        # React context (Auth)
-│   ├── hooks/          # Custom React hooks
-│   ├── lib/            # Utilities (Supabase client)
-│   ├── pages/          # Page components
-│   │   └── auth/       # Login, Signup pages
-│   ├── App.jsx         # Main app with routing
-│   └── main.jsx        # Entry point
-├── .env.local          # Environment variables (DO NOT COMMIT!)
+│   ├── components/            # React components
+│   │   ├── ui/               # shadcn/ui components
+│   │   ├── layout/           # Navbar, Layout
+│   │   ├── teams/            # Team management
+│   │   ├── tournaments/      # Tournament features
+│   │   └── coaching/         # Coaching program components
+│   ├── context/              # React Context
+│   │   └── AuthContext.jsx   # Authentication context
+│   ├── lib/                  # Utilities
+│   │   └── supabase.js       # Supabase client
+│   ├── pages/                # Page components
+│   │   ├── auth/             # Login, Signup
+│   │   ├── teams/            # Team pages
+│   │   ├── tournaments/      # Tournament pages
+│   │   └── Dashboard.jsx     # Main dashboard
+│   ├── App.jsx               # Main app with routing
+│   └── main.jsx              # Entry point
+├── database-schema.sql       # Database setup (run in Supabase)
+├── .env.local                # Environment variables (create this)
 ├── .gitignore
 ├── package.json
 ├── tailwind.config.js
 └── vite.config.js
 ```
 
-## Available Scripts
+---
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+## 🗄 Database Schema
 
-## Tech Stack
+The platform uses **32 interconnected tables** managed by Supabase (PostgreSQL):
 
-- **Frontend:** React 18, Vite
-- **UI:** Tailwind CSS, shadcn/ui
-- **Backend:** Supabase (PostgreSQL)
-- **Auth:** Supabase Auth
-- **Routing:** React Router v6
+### Core Tables
+- `profiles` - User accounts and roles
+- `teams` - Team information
+- `team_players` - Player rosters
+- `tournaments` - Tournament details
+- `matches` - Match schedules and results
+- `spirit_scores` - Spirit of the Game tracking
 
-## Need Help?
+### Coaching Tables
+- `programmes`, `batches`, `sessions`
+- `children`, `coaches`, `assessments`
+- `attendance`, `home_visits`
 
-- Check the [Issues](link-to-issues) page on GitHub
-- Contact the project maintainer
-- Review Supabase docs: https://supabase.com/docs
+### Tournament Features
+- `tournament_registrations` - Team registrations
+- `fields` - Field management
+- `sponsors` - Sponsor information
+- `announcements` - Tournament updates
+- `tournament_media` - Photos and videos
 
-## Contributing
+### User Engagement
+- `team_followers` - Team following system
+- `match_predictions` - Match prediction game
+- `visitors` - Visitor check-in system
+- `approval_requests` - Role upgrade requests
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
+For complete schema details, see `database-schema.sql`
 
 ---
 
-Built for Y-Ultimate • Open Source • Tech4Good Community
+## 🎯 Getting Started Guide
+
+### 1. Create Your Account
+
+Visit `/signup` and create an account with one of these roles:
+- **Player** - Join teams and participate
+- **Team Manager** - Create and manage teams
+- **Spectator** - View tournaments
+
+> **Note**: Coach and Tournament Director roles require admin approval for security.
+
+### 2. As a Team Manager
+
+1. Navigate to "My Teams"
+2. Click "Create Team"
+3. Fill in team details (name, age division, location)
+4. Add players:
+   - Search for registered players
+   - Or add players manually
+5. Register for tournaments
+
+### 3. As a Tournament Director
+
+1. Create a tournament with details
+2. Set up fields
+3. Approve team registrations
+4. Generate match schedule
+5. Monitor live scores
+6. Manage announcements
+
+### 4. As a Coach
+
+1. Create coaching programs
+2. Set up batches and sessions
+3. Take attendance
+4. Record assessments
+5. Generate progress reports
+
+---
+
+## 🔧 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server (port 5173) |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint for code quality |
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Frontend** | React 18.3.1, Vite 5.4.2 |
+| **UI Framework** | Tailwind CSS 3.4.1 |
+| **Component Library** | shadcn/ui (Radix UI) |
+| **Backend** | Supabase (PostgreSQL) |
+| **Authentication** | Supabase Auth |
+| **Routing** | React Router v6 |
+| **Icons** | Lucide React |
+| **State Management** | React Context API |
+| **Notifications** | Sonner (Toast) |
+
+---
+
+## 🚢 Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Visit [vercel.com](https://vercel.com) and import your repo
+3. Add environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+4. Deploy
+
+---
+
+## 🐛 Troubleshooting
+
+### Supabase connection error
+
+- Verify `.env.local` exists and has correct values
+- Ensure `VITE_SUPABASE_URL` starts with `https://`
+- Restart dev server after creating `.env.local`
+
+### Player search not working
+
+- Check that users exist with `role = 'player'` in database
+- Verify RLS policies allow authenticated users to read profiles
+- Check browser console for errors
+
+### Database connection failed
+
+- Verify Supabase credentials are correct
+- Ensure `database-schema.sql` was run successfully
+- Check RLS policies are set up correctly
+
+### Port already in use
+
+- Kill the process using port 5173 or specify a different port
+
+---
+
+## 🔒 Security Features
+
+✅ Row Level Security (RLS) enabled on all tables  
+✅ Role-based access control (RBAC)  
+✅ Secure authentication via Supabase Auth  
+✅ Password hashing and secure session management  
+✅ Environment variables for sensitive data  
+✅ SQL injection prevention via Supabase client  
+✅ CORS and security headers configured  
+
+### Security Best Practices
+
+- Never commit `.env.local` to version control
+- Regularly update dependencies
+- Use strong passwords and enable 2FA
+- Review and audit RLS policies regularly
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork the repository**
+
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+
+3. **Commit your changes**
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+
+4. **Push to your branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+
+5. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow React best practices
+- Use Tailwind CSS for styling
+- Write meaningful commit messages
+- Test thoroughly before submitting PR
+- Update documentation for new features
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 Contact & Support
+
+Need help? Here are your options:
+
+- 📧 **Email**: ykchoudhary110@gmail.com, shubhshukla031@gmail.com, pal975416@gmail.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/y-ultimate-platform/issues)
+- 📖 **Docs**: [Supabase Documentation](https://supabase.com/docs)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/y-ultimate-platform/discussions)
+
+---
+
+<div align="center">
+
+Made with ❤️ by **Team Odyssey**
+
+[⭐ Star this repo](https://github.com/yourusername/y-ultimate-platform) • [🐛 Report Bug](https://github.com/yourusername/y-ultimate-platform/issues) • [✨ Request Feature](https://github.com/yourusername/y-ultimate-platform/issues)
+
+</div>
