@@ -542,7 +542,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar /> {/* ✅ Added Navbar */}
+      <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -611,7 +611,7 @@ export default function Dashboard() {
           </Card>
         )}
 
-        {/* ✅ Pending User Approvals (for Tournament Director) */}
+        {/* Pending User Approvals (for Tournament Director) */}
         {profile?.role === "tournament_director" && (
           <Card className="border-yellow-500 mb-8">
             <CardHeader>
@@ -636,7 +636,7 @@ export default function Dashboard() {
                     className="flex items-center gap-2"
                   >
                     <Link to="/admin/approvals">
-                      <UserCheck className="h-4 w-4" />
+                      <CheckCircle className="h-4 w-4" />
                       Review Pending Approvals
                     </Link>
                   </Button>
