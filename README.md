@@ -1,4 +1,4 @@
-# Y-Ultimate Management Platform 🥏
+# Tournament Management Platform 🥏
 
 A comprehensive web platform for managing Ultimate Frisbee tournaments, teams, coaching programs, and community engagement for underprivileged youth.
 
