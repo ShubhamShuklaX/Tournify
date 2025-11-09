@@ -114,7 +114,7 @@ y-ultimate-platform/
 │   ├── context/              # React Context
 │   │   └── AuthContext.jsx   # Authentication context
 │   ├── lib/                  # Utilities
-│   │   └── supabase.js       # Supabase client
+│   │   └──mongoDB.js         # Database                                    <!--supabase.js  # Supabase client-->     
 │   ├── pages/                # Page components
 │   │   ├── auth/             # Login, Signup
 │   │   ├── teams/            # Team pages
@@ -131,7 +131,7 @@ y-ultimate-platform/
 ```
 
 ---
-
+<!--
 ## 🗄 Database Schema
 
 The platform uses **32 interconnected tables** managed by Supabase (PostgreSQL):
@@ -165,7 +165,7 @@ The platform uses **32 interconnected tables** managed by Supabase (PostgreSQL):
 For complete schema details, see `database-schema.sql`
 
 ---
-
+-->  
 ## 🎯 Getting Started Guide
 
 ### 1. Create Your Account
@@ -224,51 +224,12 @@ Visit `/signup` and create an account with one of these roles:
 | **Frontend** | React 18.3.1, Vite 5.4.2 |
 | **UI Framework** | Tailwind CSS 3.4.1 |
 | **Component Library** | shadcn/ui (Radix UI) |
-| **Backend** | Supabase (PostgreSQL) |
-| **Authentication** | Supabase Auth |
+| **Backend** | MongoDB |<!--Supabase (PostgreSQL)-->  
+| **Authentication** | Auth |<!--Supabase Auth--> 
 | **Routing** | React Router v6 |
 | **Icons** | Lucide React |
 | **State Management** | React Context API |
 | **Notifications** | Sonner (Toast) |
-
----
-
-## 🚢 Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Visit [vercel.com](https://vercel.com) and import your repo
-3. Add environment variables:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-4. Deploy
-
----
-
-## 🐛 Troubleshooting
-
-### Supabase connection error
-
-- Verify `.env.local` exists and has correct values
-- Ensure `VITE_SUPABASE_URL` starts with `https://`
-- Restart dev server after creating `.env.local`
-
-### Player search not working
-
-- Check that users exist with `role = 'player'` in database
-- Verify RLS policies allow authenticated users to read profiles
-- Check browser console for errors
-
-### Database connection failed
-
-- Verify Supabase credentials are correct
-- Ensure `database-schema.sql` was run successfully
-- Check RLS policies are set up correctly
-
-### Port already in use
-
-- Kill the process using port 5173 or specify a different port
 
 ---
 
@@ -281,15 +242,6 @@ Visit `/signup` and create an account with one of these roles:
 ✅ Environment variables for sensitive data  
 ✅ SQL injection prevention via Supabase client  
 ✅ CORS and security headers configured  
-
-### Security Best Practices
-
-- Never commit `.env.local` to version control
-- Regularly update dependencies
-- Use strong passwords and enable 2FA
-- Review and audit RLS policies regularly
-
----
 
 ## 🤝 Contributing
 
@@ -330,14 +282,11 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-## 📞 Contact & Support
+## 📞 Contact
 
-Need help? Here are your options:
+Need help?
 
 - 📧 **Email**: ykchoudhary110@gmail.com, shubhshukla031@gmail.com, pal975416@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/y-ultimate-platform/issues)
-- 📖 **Docs**: [Supabase Documentation](https://supabase.com/docs)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/y-ultimate-platform/discussions)
 
 ---
 
