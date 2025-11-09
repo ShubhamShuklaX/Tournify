@@ -114,7 +114,7 @@ y-ultimate-platform/
 │   ├── context/              # React Context
 │   │   └── AuthContext.jsx   # Authentication context
 │   ├── lib/                  # Utilities
-│   │   └──mongoDB.js         # Database                                    <!--supabase.js  # Supabase client-->     
+│   │   └──mongoDB.js         # Database                                   
 │   ├── pages/                # Page components
 │   │   ├── auth/             # Login, Signup
 │   │   ├── teams/            # Team pages
