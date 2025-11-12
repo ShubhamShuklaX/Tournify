@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Helper to retry fetching until the profile exists
-  const fetchProfileWithRetry = async (userId, retries = 5, delay = 1000) => {
+  const fetchProfileWithRetry = async (userId, retries = 5, delay = 800) => {
     for (let i = 0; i < retries; i++) {
       const { data, error } = await supabase
         .from("profiles")
@@ -32,66 +32,84 @@ export const AuthProvider = ({ children }) => {
       await new Promise((r) => setTimeout(r, delay));
     }
 
+    console.warn("⚠️ Profile not found after retries.");
     setLoading(false);
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfileWithRetry(session.user.id);
-      else setLoading(false);
-    });
+    const initAuth = async () => {
+      try {
+        // ✅ 1. Load session on startup
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfileWithRetry(session.user.id);
-      else {
-        setProfile(null);
+        if (error) console.error("Error getting session:", error);
+
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          await fetchProfileWithRetry(session.user.id);
+        } else {
+          setLoading(false);
+        }
+
+        // ✅ 2. Listen for auth state changes (login, logout, token refresh)
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log("🔄 Auth state changed:", event);
+          setUser(session?.user ?? null);
+
+          if (session?.user) {
+            await fetchProfileWithRetry(session.user.id);
+          } else {
+            setProfile(null);
+            setLoading(false);
+          }
+        });
+
+        // ✅ 3. Cleanup listener
+        return () => subscription.unsubscribe();
+      } catch (err) {
+        console.error("Auth initialization error:", err);
         setLoading(false);
       }
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    initAuth();
   }, []);
 
-  // FIXED: signUp now accepts name and role
+  // ✅ Sign Up (with metadata)
   const signUp = async (email, password, name, role) => {
     console.log("🔍 SignUp called with:", { email, name, role });
 
-    // Sign up with metadata
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: {
-          name: name,
-          role: role,
-        },
+        emailRedirectTo: window.location.origin,
+        data: { name, role },
       },
     });
 
     console.log("✅ Auth signup result:", data);
 
-    // The trigger will handle profile creation, but we can also manually create it
     if (!error && data.user) {
       console.log("📝 Creating profile manually for:", data.user.id);
 
-      // Wait a moment for trigger to complete
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Wait a bit to avoid trigger timing issue
+      await new Promise((r) => setTimeout(r, 600));
 
-      // Try to insert/update profile with correct data
       const { error: profileError } = await supabase.from("profiles").upsert(
         {
           id: data.user.id,
-          email: email,
-          name: name,
-          role: role,
+          email,
+          name,
+          role,
         },
-        {
-          onConflict: "id",
-        }
+        { onConflict: "id" }
       );
 
       if (profileError) {
@@ -104,21 +122,45 @@ export const AuthProvider = ({ children }) => {
     return { data, error };
   };
 
+  // ✅ Sign In (handle refresh safely)
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { data, error };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      console.log("✅ SignIn success:", data.user);
+      setUser(data.user);
+      await fetchProfileWithRetry(data.user.id);
+      return { data, error: null };
+    } catch (err) {
+      console.error("❌ SignIn failed:", err.message);
+      return { data: null, error: err };
+    }
   };
 
+  // ✅ Sign Out (clear session + state)
   const signOut = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem("supabase.auth.token"); // 👈 Clears invalid tokens
     setUser(null);
     setProfile(null);
   };
 
   const value = { user, profile, loading, signUp, signIn, signOut };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-screen text-gray-600">
+          Loading authentication...
+        </div>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
 };

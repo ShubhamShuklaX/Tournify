@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-import Dashboard from "./pages/dashboard.jsx";
+import Dashboard from "./pages/dashboard";
 
 // Tournament Pages
 import TournamentList from "./pages/tournaments/TournamentList";
@@ -45,11 +45,6 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
 
   if (!user) {
     return <Navigate to="/login" />;
-  }
-
-  // Check if user needs approval (except players)
-  if (profile?.role !== "player" && !profile?.is_approved) {
-    return <Navigate to="/dashboard" />;
   }
 
   // Check role access
@@ -126,16 +121,6 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <MediaGallery />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admin Routes */}
-          <Route
-            path="/admin/approvals"
-            element={
-              <ProtectedRoute allowedRoles={["tournament_director"]}>
-                <UserApprovals />
               </ProtectedRoute>
             }
           />
