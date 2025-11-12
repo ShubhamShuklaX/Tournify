@@ -50,6 +50,7 @@ export default function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
     if (!formData.category) {
       toast.error("Please select your category (Tournament/Coaching)");
       return;
@@ -58,12 +59,10 @@ export default function Signup() {
       toast.error("Please select your role");
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords don't match!");
       return;
     }
-
     if (formData.password.length < 6) {
       toast.error("Password must be at least 6 characters!");
       return;
@@ -71,11 +70,30 @@ export default function Signup() {
 
     setLoading(true);
 
+    // ✅ Map human-readable roles to valid database keys
+    const roleMap = {
+      "Tournament Director": "tournament_director",
+      "Team Manager / Captain": "team_manager",
+      Player: "player",
+      "Volunteer / Field Official": "volunteer",
+      "Scoring / Tech Team": "scoring_team",
+      "Sponsor / Partner": "spectator",
+      "Spectator / Fan": "spectator",
+      "Programme Director / Admin": "coach",
+      "Programme Manager": "coach",
+      "Coach / Session Facilitator": "coach",
+      "Reporting / Data Team": "coach",
+      "Community / School Coordinator": "coach",
+    };
+
+    const normalizedRole = roleMap[formData.role] || "spectator";
+
+    // ✅ Send only normalized role
     const { error } = await signUp(
       formData.email,
       formData.password,
       formData.name,
-      formData.role
+      normalizedRole
     );
 
     if (error) {
