@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/dashboard.jsx";
 
 // Tournament Pages
 import TournamentList from "./pages/tournaments/TournamentList";
