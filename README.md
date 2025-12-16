@@ -66,7 +66,7 @@ Ensure you have the following installed:
    ```bash
    npm install
    ```
-<!--
+
 3. **Set up Supabase**
    - Create a Supabase account at [supabase.com](https://supabase.com)
    - Create a new project
@@ -82,14 +82,8 @@ Ensure you have the following installed:
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
--->
-4. **Configure environment variables**
-  Create a `.env.local` file in the project root:
-   ```env
-   VITE_MONGOOSE_URL=your_mongoose_project_url
-   ```
-5. 
-6. **Start the development server**
+
+5. **Start the development server**
    ```bash
    npm run dev
    ```
@@ -114,7 +108,7 @@ y-ultimate-platform/
 │   ├── context/              # React Context
 │   │   └── AuthContext.jsx   # Authentication context
 │   ├── lib/                  # Utilities
-│   │   └──mongoDB.js         # Database                                   
+│   │   └── supabase.js       # Supabase client                            
 │   ├── pages/                # Page components
 │   │   ├── auth/             # Login, Signup
 │   │   ├── teams/            # Team pages
@@ -122,7 +116,7 @@ y-ultimate-platform/
 │   │   └── Dashboard.jsx     # Main dashboard
 │   ├── App.jsx               # Main app with routing
 │   └── main.jsx              # Entry point
-├── database-schema.sql       # Database setup (run in Supabase)
+├── database-schema.sql       # Database setup 
 ├── .env.local                # Environment variables (create this)
 ├── .gitignore
 ├── package.json
@@ -131,7 +125,7 @@ y-ultimate-platform/
 ```
 
 ---
-<!--
+
 ## 🗄 Database Schema
 
 The platform uses **32 interconnected tables** managed by Supabase (PostgreSQL):
@@ -165,7 +159,7 @@ The platform uses **32 interconnected tables** managed by Supabase (PostgreSQL):
 For complete schema details, see `database-schema.sql`
 
 ---
--->  
+
 ## 🎯 Getting Started Guide
 
 ### 1. Create Your Account
@@ -224,8 +218,8 @@ Visit `/signup` and create an account with one of these roles:
 | **Frontend** | React 18.3.1, Vite 5.4.2 |
 | **UI Framework** | Tailwind CSS 3.4.1 |
 | **Component Library** | shadcn/ui (Radix UI) |
-| **Backend** | MongoDB |<!--Supabase (PostgreSQL)-->  
-| **Authentication** | Auth |<!--Supabase Auth--> 
+| **Backend** | Supabase (PostgreSQL) |
+| **Authentication** | Supabase Auth |
 | **Routing** | React Router v6 |
 | **Icons** | Lucide React |
 | **State Management** | React Context API |
@@ -294,6 +288,6 @@ Need help?
 
 Made with ❤️ by **Team Odyssey**
 
-[⭐ Star this repo](https://github.com/yourusername/y-ultimate-platform) • [🐛 Report Bug](https://github.com/yourusername/y-ultimate-platform/issues) • [✨ Request Feature](https://github.com/yourusername/y-ultimate-platform/issues)
+[⭐ Star this repo](https://github.com/ShubhamShuklaX/Tournify) • [🐛 Report Bug](https://github.com/ShubhamShuklaX/Tournify) • [✨ Request Feature](https://github.com/ShubhamShuklaX/Tournify/issues)
 
 </div>
